@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casio FX-580VN X Simulator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .calculator {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            max-width: 320px;
+            width: 100%;
+            border: 2px solid #333;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 5px 10px;
+        }
+
+        .brand {
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .model {
+            color: #ecf0f1;
+            font-size: 11px;
+            background: #e74c3c;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .classwiz-logo {
+            background: linear-gradient(45deg, #e74c3c, #f39c12, #f1c40f, #27ae60, #3498db, #9b59b6);
+            color: white;
+            font-size: 8px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: bold;
+            text-align: center;
+            margin: 5px auto;
+        }
+
+        .display {
+            background: #2a4a3a;
+            border: 3px solid #1e3a2f;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 15px;
+            min-height: 100px;
+            position: relative;
+        }
+
+        .screen {
+            background: #0a2a0a;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            border: none;
+            width: 100%;
+            height: 80px;
+            text-align: right;
+            padding: 8px;
+            border-radius: 5px;
+            resize: none;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        .screen:focus {
+            outline: none;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            font-size: 9px;
+            color: #00ff00;
+            margin-bottom: 5px;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+            gap: 5px;
+        }
+
+        .nav-btn {
+            background: #34495e;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: #3498db;
+        }
+
+        .nav-btn.active {
+            background: #e74c3c;
+        }
+
+        .directional-pad {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: 1fr 1fr 1fr;
+            gap: 2px;
+            width: 60px;
+            height: 60px;
+            margin: 10px auto;
+        }
+
+        .d-pad-btn {
+            background: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 10px;
+            transition: all 0.2s;
+        }
+
+        .d-pad-btn:hover {
+            background: #34495e;
+        }
+
+        .d-pad-center {
+            background: #3498db;
+            border-radius: 50%;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 4px;
+        }
+
+        .btn {
+            padding: 8px 4px;
+            border: none;
+            border-radius: 6px;
+            font-size: 9px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            min-height: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            line-height: 1.1;
+            position: relative;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-number {
+            background: #ecf0f1;
+            color: #2c3e50;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .btn-operator {
+            background: #34495e;
+            color: white;
+        }
+
+        .btn-function {
+            background: #2c3e50;
+            color: white;
+            font-size: 8px;
+        }
+
+        .btn-special {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-blue {
+            background: #3498db;
+            color: white;
+            font-weight: bold;
+        }
+
+        .btn-secondary {
+            font-size: 6px;
+            color: #bdc3c7;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+        }
+
+        .btn-wide {
+            grid-column: span 2;
+        }
+
+        .btn-yellow {
+            color: #f1c40f;
+        }
+
+        .btn-red {
+            color: #e74c3c;
+        }
+
+        .btn-green {
+            color: #27ae60;
+        }
+
+        .btn-purple {
+            color: #9b59b6;
+        }
+
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .menu-content {
+            background: #2c3e50;
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            max-width: 300px;
+            width: 90%;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .menu-item {
+            padding: 10px;
+            background: #34495e;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .menu-item:hover {
+            background: #3498db;
+        }
+
+        .close-menu {
+            float: right;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .graph-display {
+            background: #000;
+            width: 100%;
+            height: 150px;
+            border: 1px solid #333;
+            margin: 10px 0;
+        }
+
+        .variable-storage {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            margin: 10px 0;
+        }
+
+        .var-btn {
+            padding: 5px;
+            background: #34495e;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        .var-btn.active {
+            background: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <div class="header">
+            <div class="brand">CASIO</div>
+            <div class="model">fx-580VN X</div>
+        </div>
+        
+        <div class="classwiz-logo">CLASSWIZ</div>
+        
+        <div class="display">
+            <div class="status-bar">
+                <span id="modeIndicator">COMP</span>
+                <span id="angleIndicator">DEG</span>
+                <span id="memoryIndicator"></span>
+                <span id="shiftIndicator"></span>
+                <span id="alphaIndicator"></span>
+            </div>
+            <textarea class="screen" id="screen" readonly>0</textarea>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" onclick="showMenu()">MENU</button>
+            <button class="nav-btn" onclick="showSetup()">SETUP</button>
+            <button class="nav-btn active" onclick="setMode('COMP')">ON</button>
+        </div>
+
+        <div class="directional-pad">
+            <div></div>
+            <button class="d-pad-btn" onclick="navigate('up')">↑</button>
+            <div></div>
+            <button class="d-pad-btn" onclick="navigate('left')">←</button>
+            <button class="d-pad-btn d-pad-center" onclick="select()">OK</button>
+            <button class="d-pad-btn" onclick="navigate('right')">→</button>
+            <div></div>
+            <button class="d-pad-btn" onclick="navigate('down')">↓</button>
+            <div></div>
+        </div>
+
+        <div class="buttons">
+            <!-- Row 1 -->
+            <button class="btn btn-function" onclick="openSolver()">
+                <span class="btn-secondary">SOLVE</span>
+                <span>OPTN</span>
+            </button>
+            <button class="btn btn-function" onclick="openCalculator()">
+                <span class="btn-secondary btn-yellow">∫</span>
+                <span>CALC</span>
+            </button>
+            <button class="btn btn-function" onclick="setupFunction()">
+                <span class="btn-secondary btn-red">SETUP</span>
+                <span>√‾</span>
+            </button>
+            <button class="btn btn-function" onclick="insertFunction('x^2')">
+                <span class="btn-secondary btn-green">x³</span>
+                <span>x²</span>
+            </button>
+            <button class="btn btn-function" onclick="insertFunction('^')">
+                <span class="btn-secondary btn-purple">ʸ√x</span>
+                <span>xʸ</span>
+            </button>
+
+            <!-- Row 2 -->
+            <button class="btn btn-function" onclick="insertFunction('log(')">
+                <span class="btn-secondary">10ˣ</span>
+                <span>log</span>
+            </button>
+            <button class="btn btn-function" onclick="insertFunction('ln(')">
+                <span class="btn-secondary">eˣ</span>
+                <span>ln</span>
+            </button>
+            <button class="btn btn-function" onclick="insertOperator('(-')" title="Negative">
+                <span class="btn-secondary">RECALL</span>
+                <span>(-)</span>
+            </button>
+            <button class="btn btn-function" onclick="toggleAngleUnit()">
+                <span class="btn-secondary">ANS</span>
+                <span>°'"</span>
+            </button>
+            <button class="btn btn-function" onclick="insertFunction('1/')">
+                <span class="btn-secondary">RND</span>
+                <span>x⁻¹</span>
+            </button>
+
+            <!-- Row 3 -->
+            <button class="btn btn-function" onclick="insertFunction('sin(')">
+                <span class="btn-secondary">sin⁻¹</span>
+                <span>sin</span>
+            </button>
+            <button class="btn btn-function" onclick="insertFunction('cos(')">
+                <span class="btn-secondary">cos⁻¹</span>
+                <span>cos</span>
+            </button>
+            <button class="btn btn-function" onclick="insertFunction('tan(')">
+                <span class="btn-secondary">tan⁻¹</span>
+                <span>tan</span>
+            </button>
+            <button class="btn btn-function" onclick="openStatistics()">
+                <span class="btn-secondary">Rec</span>
+                <span>S⇌D</span>
+            </button>
+            <button class="btn btn-function" onclick="memoryPlus()">
+                <span class="btn-secondary">OFF</span>
+                <span>M+</span>
+            </button>
+
+            <!-- Row 4 -->
+            <button class="btn btn-special" onclick="toggleShift()">
+                <span>SHIFT</span>
+            </button>
+            <button class="btn btn-special" onclick="toggleAlpha()">
+                <span>ALPHA</span>
+            </button>
+            <button class="btn btn-function" onclick="openStorage()">
+                <span class="btn-secondary">CONV</span>
+                <span>STO</span>
+            </button>
+            <button class="btn btn-function" onclick="engineering()">
+                <span class="btn-secondary">RESET</span>
+                <span>ENG</span>
+            </button>
+            <button class="btn btn-function" onclick="insertOperator('(')">
+                <span>(</span>
+            </button>
+
+            <!-- Row 5 -->
+            <button class="btn btn-number">7</button>
+            <button class="btn btn-number">8</button>
+            <button class="btn btn-number">9</button>
+            <button class="btn btn-blue" onclick="deleteLast()">DEL</button>
+            <button class="btn btn-blue" onclick="clearAll()">AC</button>
+
+            <!-- Row 6 -->
+            <button class="btn btn-number">4</button>
+            <button class="btn btn-number">5</button>
+            <button class="btn btn-number">6</button>
+            <button class="btn btn-operator" onclick="insertOperator('*')">×</button>
+            <button class="btn btn-operator" onclick="insertOperator('/')" title="Division">÷</button>
+
+            <!-- Row 7 -->
+            <button class="btn btn-number">1</button>
+            <button class="btn btn-number">2</button>
+            <button class="btn btn-number">3</button>
+            <button class="btn btn-operator" onclick="insertOperator('+')">+</button>
+            <button class="btn btn-operator" onclick="insertOperator('-')">-</button>
+
+            <!-- Row 8 -->
+            <button class="btn btn-number">0</button>
+            <button class="btn btn-number" onclick="insertOperator('.')">.</button>
+            <button class="btn btn-function" onclick="insertOperator('×10^')">×10ˣ</button>
+            <button class="btn btn-function" onclick="getAnswer()">Ans</button>
+            <button class="btn btn-special" onclick="calculate()">=</button>
+        </div>
+    </div>
+
+    <!-- Menu Overlay -->
+    <div class="menu-overlay" id="menuOverlay">
+        <div class="menu-content">
+            <button class="close-menu" onclick="closeMenu()">×</button>
+            <h3>MENU</h3>
+            <div class="menu-grid">
+                <button class="menu-item" onclick="setMode('COMP')">1: COMP</button>
+                <button class="menu-item" onclick="setMode('STAT')">2: STAT</button>
+                <button class="menu-item" onclick="setMode('EQN')">3: EQN</button>
+                <button class="menu-item" onclick="setMode('MATRIX')">4: MATRIX</button>
+                <button class="menu-item" onclick="setMode('VECTOR')">5: VECTOR</button>
+                <button class="menu-item" onclick="setMode('COMPLEX')">6: COMPLEX</button>
+                <button class="menu-item" onclick="setMode('BASE')">7: BASE</button>
+                <button class="menu-item" onclick="setMode('GRAPH')">8: GRAPH</button>
+                <button class="menu-item" onclick="setMode('TABLE')">9: TABLE</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let display = document.getElementById('screen');
+        let currentInput = '0';
+        let memory = {};
+        let variables = {A: 0, B: 0, C: 0, D: 0, E: 0, F: 0, X: 0, Y: 0, M: 0};
+        let currentMode = 'COMP';
+        let angleUnit = 'DEG';
+        let shiftMode = false;
+        let alphaMode = false;
+        let lastResult = 0;
+        let history = [];
+        let cursor = 0;
+
+        // Advanced mathematical functions
+        const mathFunctions = {
+            sin: (x) => angleUnit === 'DEG' ? Math.sin(x * Math.PI / 180) : Math.sin(x),
+            cos: (x) => angleUnit === 'DEG' ? Math.cos(x * Math.PI / 180) : Math.cos(x),
+            tan: (x) => angleUnit === 'DEG' ? Math.tan(x * Math.PI / 180) : Math.tan(x),
+            asin: (x) => angleUnit === 'DEG' ? Math.asin(x) * 180 / Math.PI : Math.asin(x),
+            acos: (x) => angleUnit === 'DEG' ? Math.acos(x) * 180 / Math.PI : Math.acos(x),
+            atan: (x) => angleUnit === 'DEG' ? Math.atan(x) * 180 / Math.PI : Math.atan(x),
+            factorial: (n) => {
+                if (n < 0) return NaN;
+                if (n === 0 || n === 1) return 1;
+                let result = 1;
+                for (let i = 2; i <= n; i++) {
+                    result *= i;
+                }
+                return result;
+            },
+            nCr: (n, r) => mathFunctions.factorial(n) / (mathFunctions.factorial(r) * mathFunctions.factorial(n - r)),
+            nPr: (n, r) => mathFunctions.factorial(n) / mathFunctions.factorial(n - r),
+            gcd: (a, b) => b === 0 ? Math.abs(a) : mathFunctions.gcd(b, a % b),
+            lcm: (a, b) => Math.abs(a * b) / mathFunctions.gcd(a, b)
+        };
+
+        function updateDisplay() {
+            display.value = currentInput;
+            document.getElementById('modeIndicator').textContent = currentMode;
+            document.getElementById('angleIndicator').textContent = angleUnit;
+            document.getElementById('shiftIndicator').textContent = shiftMode ? 'SHIFT' : '';
+            document.getElementById('alphaIndicator').textContent = alphaMode ? 'ALPHA' : '';
+            
+            let memoryActive = Object.values(variables).some(v => v !== 0);
+            document.getElementById('memoryIndicator').textContent = memoryActive ? 'M' : '';
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            clearAll();
+            updateDisplay();
+            closeMenu();
+        }
+
+        function insertNumber(num) {
+            if (currentInput === '0' || currentInput === 'Error' || currentInput === 'Math Error') {
+                currentInput = num;
+            } else {
+                currentInput += num;
+            }
+            updateDisplay();
+        }
+
+        function insertOperator(op) {
+            if (currentInput === 'Error' || currentInput === 'Math Error') {
+                currentInput = '0';
+            }
+            
+            if (op === '.' && currentInput.includes('.')) {
+                return;
+            }
+            
+            if (currentInput === '0' && op !== '.') {
+                currentInput = op;
+            } else {
+                currentInput += op;
+            }
+            updateDisplay();
+        }
+
+        function insertFunction(func) {
+            if (currentInput === '0' || currentInput === 'Error' || currentInput === 'Math Error') {
+                currentInput = func;
+            } else {
+                currentInput += func;
+            }
+            updateDisplay();
+        }
+
+        function calculate() {
+            try {
+                let expression = currentInput;
+                
+                // Replace calculator functions with JavaScript equivalents
+                expression = expression.replace(/sin\(/g, 'mathFunctions.sin(');
+                expression = expression.replace(/cos\(/g, 'mathFunctions.cos(');
+                expression = expression.replace(/tan\(/g, 'mathFunctions.tan(');
+                expression = expression.replace(/ln\(/g, 'Math.log(');
+                expression = expression.replace(/log\(/g, 'Math.log10(');
+                expression = expression.replace(/√\(/g, 'Math.sqrt(');
+                expression = expression.replace(/\^/g, '**');
+                expression = expression.replace(/×/g, '*');
+                expression = expression.replace(/÷/g, '/');
+                expression = expression.replace(/π/g, 'Math.PI');
+                expression = expression.replace(/e(?!\d)/g, 'Math.E');
+                
+                // Handle scientific notation
+                expression = expression.replace(/×10\^/g, 'e');
+                
+                // Handle percentage
+                expression = expression.replace(/(\d+(?:\.\d+)?)%/g, '($1/100)');
+                
+                // Handle factorial
+                expression = expression.replace(/(\d+)!/g, 'mathFunctions.factorial($1)');
+                
+                let result = eval(expression);
+                
+                if (isNaN(result) || !isFinite(result)) {
+                    currentInput = 'Math Error';
+                } else {
+                    // Format result based on magnitude
+                    if (Math.abs(result) < 0.0000001 || Math.abs(result) > 9999999999) {
+                        result = result.toExponential(6);
+                    } else {
+                        result = parseFloat(result.toFixed(12)).toString();
+                    }
+                    
+                    lastResult = result;
+                    currentInput = result;
+                    history.push(currentInput);
+                }
+            } catch (error) {
+                currentInput = 'Syntax Error';
+            }
+            updateDisplay();
+        }
+
+        function clearAll() {
+            currentInput = '0';
+            updateDisplay();
+        }
+
+        function deleteLast() {
+            if (currentInput.length > 1 && currentInput !== 'Error' && currentInput !== 'Math Error') {
+                currentInput = currentInput.slice(0, -1);
+            } else {
+                currentInput = '0';
+            }
+            updateDisplay();
+        }
+
+        function toggleShift() {
+            shiftMode = !shiftMode;
+            updateDisplay();
+        }
+
+        function toggleAlpha() {
+            alphaMode = !alphaMode;
+            updateDisplay();
+        }
+
+        function toggleAngleUnit() {
+            angleUnit = angleUnit === 'DEG' ? 'RAD' : angleUnit === 'RAD' ? 'GRAD' : 'DEG';
+            updateDisplay();
+        }
+
+        function memoryPlus() {
+            try {
+                let value = parseFloat(currentInput) || 0;
+                variables.M += value;
+                updateDisplay();
+            } catch (e) {
+                currentInput = 'Error';
+                updateDisplay();
+            }
+        }
+
+        function getAnswer() {
+            currentInput = lastResult.toString();
+            updateDisplay();
+        }
+
+        function engineering() {
+            try {
+                let num = parseFloat(currentInput);
+                if (!isNaN(num)) {
+                    let exp = Math.floor(Math.log10(Math.abs(num)) / 3) * 3;
+                    let mantissa = num / Math.pow(10, exp);
+                    currentInput = mantissa.toFixed(3) + 'E' + exp;
+                    updateDisplay();
+                }
+            } catch (e) {
+                currentInput = 'Error';
+                updateDisplay();
+            }
+        }
+
+        function showMenu() {
+            document.getElementById('menuOverlay').style.display = 'flex';
+        }
+
+        function closeMenu() {
+            document.getElementById('menuOverlay').style.display = 'none';
+        }
+
+        function showSetup() {
+            alert('Setup Menu:\n1. Angle Unit: ' + angleUnit + '\n2. Number Format\n3. Statistics\n4. Complex Numbers\n5. Display Settings');
+        }
+
+        function navigate(direction) {
+            // Navigation functionality for menus and multi-line expressions
+            console.log('Navigate: ' + direction);
+        }
+
+        function select() {
+            console.log('Select/OK pressed');
+        }
+
+        function openSolver() {
+            if (currentMode === 'EQN') {
+                alert('Equation Solver:\n1. Linear (ax+b=0)\n2. Quadratic (ax²+bx+c=0)\n3. Cubic (ax³+bx²+cx+d=0)\n4. System of equations');
+            } else {
+                alert('Switch to EQN mode to use solver');
+            }
+        }
+
+        function openCalculator() {
+            if (shiftMode) {
+                // Integration calculator
+                let func = prompt('Enter function to integrate (e.g., x^2):');
+                let a = parseFloat(prompt('Lower limit:'));
+                let b = parseFloat(prompt('Upper limit:'));
+                if (func && !isNaN(a) && !isNaN(b)) {
+                    // Simple numerical integration (trapezoidal rule)
+                    let result = numericalIntegration(func, a, b, 1000);
+                    currentInput = result.toString();
+                    updateDisplay();
+                }
+            } else {
+                alert('Advanced Calculator Functions:\n1. Derivatives\n2. Integrals\n3. Limits\n4. Summations');
+            }
+        }
+
+        function setupFunction() {
+            alert('Setup Functions:\n1. Angle units (DEG/RAD/GRAD)\n2. Number format\n3. Contrast\n4. Auto power off\n5. Language');
+        }
+
+        function openStatistics() {
+            if (currentMode === 'STAT') {
+                alert('Statistics Functions:\n1. 1-Variable\n2. 2-Variable\n3. Regression\n4. Distribution\n5. Tests');
+            } else {
+                setMode('STAT');
+            }
+        }
+
+        function openStorage() {
+            let variable = prompt('Choose variable (A-F, X, Y, M):');
+            if (variable && variables.hasOwnProperty(variable.toUpperCase())) {
+                if (shiftMode) {
+                    // Recall
+                    currentInput = variables[variable.toUpperCase()].toString();
+                } else {
+                    // Store
+                    variables[variable.toUpperCase()] = parseFloat(currentInput) || 0;
+                }
+                updateDisplay();
+            }
+        }
+
+        function numericalIntegration(func, a, b, n) {
+            let h = (b - a) / n;
+            let sum = 0;
+            
+            for (let i = 0; i <= n; i++) {
+                let x = a + i * h;
+                let y = eval(func.replace(/x/g, x));
+                
+                if (i === 0 || i === n) {
+                    sum += y;
+                } else {
+                    sum += 2 * y;
+                }
+            }
+            
+            return (h / 2) * sum;
+        }
+
+        // Add event listeners for number buttons
+        document.querySelectorAll('.btn-number').forEach(btn => {
+            if (btn.textContent.match(/^\d$/)) {
+                btn.onclick = () => insertNumber(btn.textContent);
+            }
+        });
+
+        // Initialize display
+        updateDisplay();
+
+        // Enhanced keyboard support
+        document.addEventListener('keydown', function(event) {
+            const key = event.key;
+            
+            if (key >= '0' && key <= '9') {
+                insertNumber(key);
+            } else if (key === '.') {
+                insertOperator('.');
+            } else if (key === '+') {
+                insertOperator('+');
+            } else if (key === '-') {
+                insertOperator('-');
+            } else if (key === '*') {
+                insertOperator('*');
+            } else if (key === '/') {
+                event.preventDefault();
+                insertOperator('/');
+            } else if (key === 'Enter' || key === '=') {
+                event.preventDefault();
+                calculate();
+            } else if (key === 'Escape' || key === 'c' || key === 'C') {
+                clearAll();
+            } else if (key === 'Backspace') {
+                event.preventDefault();
+                deleteLast();
+            } else if (key === '(') {
+                insertOperator('(');
+            } else if (key === ')') {
+                insertOperator(')');
+            } else if (key === 's') {
+                insertFunction('sin(');
+            } else if (key === 'l') {
+                insertFunction('ln(');
+            } else if (key === 'm') {
+                showMenu();
+            }
+        });
+
+        // Advanced mathematical constants and functions
+        const constants = {
+            pi: Math.PI,
+            e: Math.E,
+            phi: (1 + Math.sqrt(5)) / 2, // Golden ratio
+            c: 299792458, // Speed of light
+            h: 6.62607015e-34, // Planck constant
+            k: 1.380649e-23, // Boltzmann constant
+            Na: 6.02214076e23, // Avogadro constant
+            g: 9.80665 // Standard gravity
+        };
+
+        // Matrix operations
+        class Matrix {
+            constructor(rows, cols, data = null) {
+                this.rows = rows;
+                this.cols = cols;
+                this.data = data || Array(rows).fill().map(() => Array(cols).fill(0));
+            }
+
+            static add(a, b) {
+                if (a.rows !== b.rows || a.cols !== b.cols) {
+                    throw new Error('Matrix dimensions must match');
+                }
+                let result = new Matrix(a.rows, a.cols);
+                for (let i = 0; i < a.rows; i++) {
+                    for (let j = 0; j < a.cols; j++) {
+                        result.data[i][j] = a.data[i][j] + b.data[i][j];
+                    }
+                }
+                return result;
+            }
+
+            static multiply(a, b) {
+                if (a.cols !== b.rows) {
+                    throw new Error('Invalid matrix dimensions for multiplication');
+                }
+                let result = new Matrix(a.rows, b.cols);
+                for (let i = 0; i < a.rows; i++) {
+                    for (let j = 0; j < b.cols; j++) {
+                        let sum = 0;
+                        for (let k = 0; k < a.cols; k++) {
+                            sum += a.data[i][k] * b.data[k][j];
+                        }
+                        result.data[i][j] = sum;
+                    }
+                }
+                return result;
+            }
+
+            determinant() {
+                if (this.rows !== this.cols) {
+                    throw new Error('Matrix must be square');
+                }
+                if (this.rows === 1) return this.data[0][0];
+                if (this.rows === 2) {
+                    return this.data[0][0] * this.data[1][1] - this.data[0][1] * this.data[1][0];
+                }
+                // For larger matrices, use cofactor expansion
+                let det = 0;
+                for (let j = 0; j < this.cols; j++) {
+                    let minor = this.getMinor(0, j);
+                    det += Math.pow(-1, j) * this.data[0][j] * minor.determinant();
+                }
+                return det;
+            }
+
+            getMinor(row, col) {
+                let minor = new Matrix(this.rows - 1, this.cols - 1);
+                let minorRow = 0;
+                for (let i = 0; i < this.rows; i++) {
+                    if (i === row) continue;
+                    let minorCol = 0;
+                    for (let j = 0; j < this.cols; j++) {
+                        if (j === col) continue;
+                        minor.data[minorRow][minorCol] = this.data[i][j];
+                        minorCol++;
+                    }
+                    minorRow++;
+                }
+                return minor;
+            }
+        }
+
+        // Complex number operations
+        class Complex {
+            constructor(real, imag = 0) {
+                this.real = real;
+                this.imag = imag;
+            }
+
+            add(other) {
+                return new Complex(this.real + other.real, this.imag + other.imag);
+            }
+
+            multiply(other) {
+                return new Complex(
+                    this.real * other.real - this.imag * other.imag,
+                    this.real * other.imag + this.imag * other.real
+                );
+            }
+
+            magnitude() {
+                return Math.sqrt(this.real * this.real + this.imag * this.imag);
+            }
+
+            argument() {
+                return Math.atan2(this.imag, this.real);
+            }
+
+            toString() {
+                if (this.imag === 0) return this.real.toString();
+                if (this.real === 0) return this.imag + 'i';
+                let sign = this.imag >= 0 ? '+' : '';
+                return `${this.real}${sign}${this.imag}i`;
+            }
+        }
+
+        // Statistical functions
+        const statistics = {
+            mean: (data) => data.reduce((sum, x) => sum + x, 0) / data.length,
+            
+            standardDeviation: (data) => {
+                let mean = statistics.mean(data);
+                let variance = data.reduce((sum, x) => sum + Math.pow(x - mean, 2), 0) / data.length;
+                return Math.sqrt(variance);
+            },
+            
+            correlation: (x, y) => {
+                if (x.length !== y.length) throw new Error('Arrays must have same length');
+                let meanX = statistics.mean(x);
+                let meanY = statistics.mean(y);
+                let numerator = 0;
+                let sumXSquared = 0;
+                let sumYSquared = 0;
+                
+                for (let i = 0; i < x.length; i++) {
+                    let deltaX = x[i] - meanX;
+                    let deltaY = y[i] - meanY;
+                    numerator += deltaX * deltaY;
+                    sumXSquared += deltaX * deltaX;
+                    sumYSquared += deltaY * deltaY;
+                }
+                
+                return numerator / Math.sqrt(sumXSquared * sumYSquared);
+            },
+            
+            linearRegression: (x, y) => {
+                let n = x.length;
+                let sumX = x.reduce((a, b) => a + b, 0);
+                let sumY = y.reduce((a, b) => a + b, 0);
+                let sumXY = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
+                let sumXSquared = x.reduce((sum, xi) => sum + xi * xi, 0);
+                
+                let slope = (n * sumXY - sumX * sumY) / (n * sumXSquared - sumX * sumX);
+                let intercept = (sumY - slope * sumX) / n;
+                
+                return { slope, intercept };
+            }
+        };
+
+        // Probability distributions
+        const distributions = {
+            normalCDF: (x, mean = 0, stddev = 1) => {
+                return 0.5 * (1 + erf((x - mean) / (stddev * Math.sqrt(2))));
+            },
+            
+            binomial: (n, k, p) => {
+                return mathFunctions.nCr(n, k) * Math.pow(p, k) * Math.pow(1 - p, n - k);
+            },
+            
+            poisson: (k, lambda) => {
+                return Math.pow(lambda, k) * Math.pow(Math.E, -lambda) / mathFunctions.factorial(k);
+            }
+        };
+
+        // Error function approximation
+        function erf(x) {
+            let a1 =  0.254829592;
+            let a2 = -0.284496736;
+            let a3 =  1.421413741;
+            let a4 = -1.453152027;
+            let a5 =  1.061405429;
+            let p  =  0.3275911;
+            
+            let sign = x >= 0 ? 1 : -1;
+            x = Math.abs(x);
+            
+            let t = 1.0 / (1.0 + p * x);
+            let y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+            
+            return sign * y;
+        }
+
+        // Financial calculations
+        const financial = {
+            futureValue: (pv, rate, periods) => pv * Math.pow(1 + rate, periods),
+            
+            presentValue: (fv, rate, periods) => fv / Math.pow(1 + rate, periods),
+            
+            payment: (pv, rate, periods) => {
+                if (rate === 0) return pv / periods;
+                return pv * rate / (1 - Math.pow(1 + rate, -periods));
+            },
+            
+            compoundInterest: (principal, rate, time, compoundFreq) => {
+                return principal * Math.pow(1 + rate / compoundFreq, compoundFreq * time);
+            }
+        };
+
+        // Conversion functions
+        const conversions = {
+            degreesToRadians: (deg) => deg * Math.PI / 180,
+            radiansToDegrees: (rad) => rad * 180 / Math.PI,
+            
+            // Base conversions
+            decToBin: (dec) => parseInt(dec).toString(2),
+            decToOct: (dec) => parseInt(dec).toString(8),
+            decToHex: (dec) => parseInt(dec).toString(16).toUpperCase(),
+            
+            binToDec: (bin) => parseInt(bin, 2),
+            octToDec: (oct) => parseInt(oct, 8),
+            hexToDec: (hex) => parseInt(hex, 16),
+            
+            // Unit conversions
+            meterToFeet: (m) => m * 3.28084,
+            feetToMeter: (ft) => ft / 3.28084,
+            celsiusToFahrenheit: (c) => c * 9/5 + 32,
+            fahrenheitToCelsius: (f) => (f - 32) * 5/9
+        };
+
+        // QR Code simulation (placeholder)
+        function generateQRCode() {
+            alert('QR Code Generated!\nScan with ClassWiz Emulator app to view detailed results and graphs on your mobile device.');
+        }
+
+        // Graph plotting function
+        function plotGraph(expression, xMin = -10, xMax = 10) {
+            if (currentMode !== 'GRAPH') {
+                setMode('GRAPH');
+            }
+            
+            // Create a simple ASCII graph representation
+            let points = [];
+            let step = (xMax - xMin) / 50;
+            
+            for (let x = xMin; x <= xMax; x += step) {
+                try {
+                    let y = eval(expression.replace(/x/g, x));
+                    if (isFinite(y)) {
+                        points.push({x, y});
+                    }
+                } catch (e) {
+                    // Skip invalid points
+                }
+            }
+            
+            // Display graph data
+            currentInput = `Graph: ${expression}\nPoints: ${points.length}`;
+            updateDisplay();
+        }
+
+        // Table generation
+        function generateTable(expression, xStart = -5, xEnd = 5, step = 1) {
+            if (currentMode !== 'TABLE') {
+                setMode('TABLE');
+            }
+            
+            let table = 'X\tY\n';
+            for (let x = xStart; x <= xEnd; x += step) {
+                try {
+                    let y = eval(expression.replace(/x/g, x));
+                    table += `${x}\t${y.toFixed(4)}\n`;
+                } catch (e) {
+                    table += `${x}\tError\n`;
+                }
+            }
+            
+            currentInput = table;
+            updateDisplay();
+        }
+
+        // Spreadsheet functionality
+        class Spreadsheet {
+            constructor() {
+                this.cells = {};
+            }
+            
+            setCell(address, value) {
+                this.cells[address] = value;
+            }
+            
+            getCell(address) {
+                return this.cells[address] || 0;
+            }
+            
+            calculate() {
+                // Simple spreadsheet calculation
+                for (let cell in this.cells) {
+                    if (typeof this.cells[cell] === 'string' && this.cells[cell].startsWith('=')) {
+                        try {
+                            let formula = this.cells[cell].substring(1);
+                            // Replace cell references with values
+                            formula = formula.replace(/[A-Z]\d+/g, (match) => this.getCell(match));
+                            this.cells[cell] = eval(formula);
+                        } catch (e) {
+                            this.cells[cell] = 'Error';
+                        }
+                    }
+                }
+            }
+        }
+
+        let spreadsheet = new Spreadsheet();
+
+        // Enhanced mode-specific functions
+        function handleModeSpecificFunction(func) {
+            switch (currentMode) {
+                case 'STAT':
+                    handleStatFunction(func);
+                    break;
+                case 'MATRIX':
+                    handleMatrixFunction(func);
+                    break;
+                case 'COMPLEX':
+                    handleComplexFunction(func);
+                    break;
+                case 'BASE':
+                    handleBaseFunction(func);
+                    break;
+                case 'EQN':
+                    handleEquationFunction(func);
+                    break;
+                case 'GRAPH':
+                    handleGraphFunction(func);
+                    break;
+                case 'TABLE':
+                    handleTableFunction(func);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        function handleStatFunction(func) {
+            // Statistical function implementations
+            let data = currentInput.split(',').map(x => parseFloat(x.trim())).filter(x => !isNaN(x));
+            
+            switch (func) {
+                case 'mean':
+                    currentInput = statistics.mean(data).toString();
+                    break;
+                case 'stddev':
+                    currentInput = statistics.standardDeviation(data).toString();
+                    break;
+                case 'sum':
+                    currentInput = data.reduce((a, b) => a + b, 0).toString();
+                    break;
+            }
+            updateDisplay();
+        }
+
+        function handleMatrixFunction(func) {
+            // Matrix function implementations
+            alert('Matrix mode: Enter matrix elements separated by commas, rows separated by semicolons');
+        }
+
+        function handleComplexFunction(func) {
+            // Complex number function implementations
+            alert('Complex mode: Enter complex numbers as a+bi format');
+        }
+
+        function handleBaseFunction(func) {
+            // Base conversion implementations
+            let num = parseInt(currentInput);
+            if (isNaN(num)) return;
+            
+            switch (func) {
+                case 'bin':
+                    currentInput = conversions.decToBin(num);
+                    break;
+                case 'oct':
+                    currentInput = conversions.decToOct(num);
+                    break;
+                case 'hex':
+                    currentInput = conversions.decToHex(num);
+                    break;
+            }
+            updateDisplay();
+        }
+
+        function handleEquationFunction(func) {
+            // Equation solver implementations
+            alert('Equation solver: Enter coefficients for polynomial equations');
+        }
+
+        function handleGraphFunction(func) {
+            // Graph function implementations
+            let expr = prompt('Enter function to graph (use x as variable):');
+            if (expr) {
+                plotGraph(expr);
+            }
+        }
+
+        function handleTableFunction(func) {
+            // Table function implementations
+            let expr = prompt('Enter function for table (use x as variable):');
+            if (expr) {
+                generateTable(expr);
+            }
+        }
+
+        // Initialize the calculator
+        updateDisplay();
+        console.log('Casio FX-580VN X Calculator initialized with full functionality');
+    </script>
+</body>
+</html>
